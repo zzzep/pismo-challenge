@@ -3,7 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/zzzep/pismo-challenge/src/data/entities"
+	"github.com/zzzep/pismo-challenge/src/data/domains"
 	"github.com/zzzep/pismo-challenge/src/data/repositories"
 	"strconv"
 )
@@ -19,7 +19,7 @@ func NewAccount() *Account {
 
 func (a *Account) CreateAccount(c *gin.Context) {
 	b, _ := c.GetRawData()
-	acc := &entities.Account{}
+	acc := &domains.Account{}
 	_ = json.Unmarshal(b, acc)
 	if a.repo.Create(*acc) {
 		c.JSON(200, acc)
@@ -29,12 +29,11 @@ func (a *Account) CreateAccount(c *gin.Context) {
 }
 
 func (a *Account) GetAccount(c *gin.Context) {
-	paramId := c.Param("accountId")
-	id, _ := strconv.Atoi(paramId)
+	id, _ := strconv.Atoi(c.Param("accountId"))
 	acc := a.repo.Get(id)
 	if acc != nil {
 		c.JSON(200, acc)
 		return
 	}
-	c.JSON(404, nil)
+	c.JSON(404, gin.H{"message": "not found"})
 }

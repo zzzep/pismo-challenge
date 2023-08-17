@@ -1,7 +1,7 @@
 package migrations
 
 import (
-	"github.com/zzzep/pismo-challenge/src/data/entities"
+	"github.com/zzzep/pismo-challenge/src/data/domains"
 	"github.com/zzzep/pismo-challenge/src/enum"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -15,7 +15,7 @@ func Run() (err error) {
 		return err
 	}
 
-	err = db.AutoMigrate(&entities.Account{}, &entities.Transaction{})
+	err = db.AutoMigrate(&domains.Account{}, &domains.Transaction{})
 	if err != nil {
 		return err
 	}

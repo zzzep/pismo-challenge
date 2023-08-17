@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/zzzep/pismo-challenge/src/data/entities"
+	"github.com/zzzep/pismo-challenge/src/data/domains"
 	"github.com/zzzep/pismo-challenge/src/enum"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -21,7 +21,7 @@ func NewAccountRepository() *AccountsRepository {
 	}
 	return &AccountsRepository{db: db}
 }
-func (a AccountsRepository) Create(data entities.Account) bool {
+func (a AccountsRepository) Create(data domains.Account) bool {
 	r := a.db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
@@ -30,8 +30,8 @@ func (a AccountsRepository) Create(data entities.Account) bool {
 	return true
 }
 
-func (a AccountsRepository) Get(id int) *entities.Account {
-	acc := &entities.Account{}
+func (a AccountsRepository) Get(id int) *domains.Account {
+	acc := &domains.Account{}
 	_ = a.db.First(acc, id)
 	return acc
 }

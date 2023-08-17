@@ -1,4 +1,4 @@
-package entities
+package domains
 
 type OperationType int
 
