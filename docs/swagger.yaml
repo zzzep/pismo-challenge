@@ -1,0 +1,158 @@
+basePath: /
+definitions:
+  domains.Account:
+    properties:
+      account_id:
+        type: integer
+      document_number:
+        type: string
+    type: object
+  domains.OperationType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - Purchase
+    - Installment
+    - Withdrawal
+    - Payment
+  domains.Transaction:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: number
+      operation_type_id:
+        $ref: '#/definitions/domains.OperationType'
+    type: object
+host: localhost:80
+info:
+  contact:
+    email: giuseppe.fechio@gmail.com
+    name: Giuseppe Fechio
+    url: http://github.com/zzzep/pismo-challenge
+  description: This is a Challenge made by Giuseppe to Pismo
+  title: Pismo Challenge Giuseppe
+  version: "1.0"
+paths:
+  /accounts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Document Number
+        in: body
+        name: JSON
+        required: true
+        schema:
+          $ref: '#/definitions/domains.Account'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domains.Account'
+            - properties:
+                document_number:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+      summary: Create new Account
+  /accounts/{accountId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domains.Account'
+            - properties:
+                account_id:
+                  type: integer
+                document_number:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              properties:
+                message:
+                  type: string
+              type: object
+            type: object
+      summary: Create new Account
+  /accounts/{accountId}/transactions:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/domains.Transaction'
+              - properties:
+                  account_id:
+                    type: integer
+                  document_number:
+                    type: string
+                type: object
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              properties:
+                message:
+                  type: string
+              type: object
+            type: object
+      summary: List Transaction by Account
+  /transactions:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Transaction
+        in: body
+        name: JSON
+        required: true
+        schema:
+          $ref: '#/definitions/domains.Transaction'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domains.Transaction'
+        "500":
+          description: Internal Server Error
+      summary: Create new Transaction
+swagger: "2.0"

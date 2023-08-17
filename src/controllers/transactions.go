@@ -16,6 +16,14 @@ func NewTransaction(repo *repositories.TransactionsRepository) *Transaction {
 	return &Transaction{repo: repo}
 }
 
+// CreateTransaction
+// @Summary Create new Transaction
+// @Accept json
+// @Produce json
+// @Param JSON body domains.Transaction true "Transaction"
+// @Success 200 {object} domains.Transaction{}
+// @Failure 500 {object} nil
+// @Router /transactions [POST]
 func (t *Transaction) CreateTransaction(c *gin.Context) {
 	b, _ := c.GetRawData()
 	acc := &domains.Transaction{}
@@ -33,6 +41,14 @@ func (t *Transaction) CreateTransaction(c *gin.Context) {
 	c.JSON(500, nil)
 }
 
+// GetTransactionByAccount
+// @Summary List Transaction by Account
+// @Accept json
+// @Produce json
+// @Param accountId path int true "Account ID"
+// @Success 200 {object} []domains.Transaction{account_id=int,document_number=string}
+// @Failure 404 {object} map[string]any{message=string}
+// @Router /accounts/{accountId}/transactions [GET]
 func (t *Transaction) GetTransactionByAccount(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("accountId"))
 	transactions := t.repo.GetByAccount(id)
