@@ -1,6 +1,8 @@
 package config
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func (c *Container) SetRoutes() {
 	c.Router.POST("/accounts", c.AccountController.CreateAccount)

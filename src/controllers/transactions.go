@@ -2,18 +2,18 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/zzzep/pismo-challenge/src/data/respositories"
+	"github.com/zzzep/pismo-challenge/src/data/repositories"
 )
 
 type Transaction struct {
-	repo respositories.TransactionsRepository
+	repo repositories.TransactionsRepository
 }
 
 func NewTransaction() *Transaction {
-	t := &Transaction{repo: respositories.NewTransactionRepository()}
+	t := &Transaction{repo: repositories.NewTransactionRepository()}
 	return t
 }
 
 func (a *Transaction) CreateTransaction(c *gin.Context) {
-	
+
 }

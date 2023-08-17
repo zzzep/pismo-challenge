@@ -1,4 +1,4 @@
-package respositories
+package repositories
 
 import "github.com/zzzep/pismo-challenge/src/data/entities"
 
