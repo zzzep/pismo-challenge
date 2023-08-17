@@ -2,6 +2,7 @@ package respositories
 
 import (
 	"github.com/zzzep/pismo-challenge/src/data/entities"
+	"gorm.io/gorm"
 )
 
 type AccountsRepository struct {

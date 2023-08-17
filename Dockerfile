@@ -2,13 +2,13 @@ FROM golang:1.20-buster AS builder
 
 WORKDIR /var/app
 
-COPY go.* ./
+COPY . .
 
 RUN go mod download
 
-COPY *.go ./
+RUN go clean -modcache
 
-RUN go clean -modcache ; go mod tidy
+RUN go mod tidy
 
 RUN go build -o /pismo_challenge
 

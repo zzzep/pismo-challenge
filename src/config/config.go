@@ -4,9 +4,9 @@ import "fmt"
 
 const dbUser = "giuseppe"
 const dbPassword = "1q!Q"
-const dbHost = "127.0.0.1"
+const dbHost = "10.30.1.22"
 const dbPort = "3306"
-const dbName = "pismo2023"
+const dbName = "pismo"
 const dbCharset = "utf8mb4"
 const dbTemplate = "%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local"
 

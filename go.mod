@@ -3,9 +3,7 @@ module github.com/zzzep/pismo-challenge
 go 1.20
 
 replace (
-	github.com/zzzep/pismo-challenge => ./src/
-	github.com/zzzep/pismo-challenge/src/config => ./src/config
-	github.com/zzzep/pismo-challenge/src/migrations => ./src/migrations
+	github.com/zzzep/pismo-challenge/src => ./src
 )
 
 require (

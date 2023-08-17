@@ -9,7 +9,8 @@ import (
 
 func Run() (err error) {
 	var db *gorm.DB
-	db, err = gorm.Open(mysql.Open(config.GetDatabaseConnection()), &gorm.Config{})
+	m := mysql.Open(config.GetDatabaseConnection())
+	db, err = gorm.Open(m, &gorm.Config{})
 	if err != nil {
 		return err
 	}
