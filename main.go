@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/zzzep/pismo-challenge/config"
-	"github.com/zzzep/pismo-challenge/migrations"
+	"github.com/zzzep/pismo-challenge/src/config"
+	"github.com/zzzep/pismo-challenge/src/migrations"
 	"log"
 )
 

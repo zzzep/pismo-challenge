@@ -3,11 +3,10 @@ module github.com/zzzep/pismo-challenge
 go 1.20
 
 replace (
-	github.com/zzzep/pismo-challenge/src => ./src/
-	github.com/zzzep/pismo-challenge/config => ./config/
-	github.com/zzzep/pismo-challenge/migrations => ./migrations/
+	github.com/zzzep/pismo-challenge => ./src/
+	github.com/zzzep/pismo-challenge/src/config => ./src/config
+	github.com/zzzep/pismo-challenge/src/migrations => ./src/migrations
 )
-
 
 require (
 	github.com/gin-gonic/gin v1.9.1
