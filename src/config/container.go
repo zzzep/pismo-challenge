@@ -3,17 +3,27 @@ package config
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/zzzep/pismo-challenge/src/controllers"
+	"github.com/zzzep/pismo-challenge/src/data/repositories"
 )
 
 type Container struct {
 	Router                *gin.Engine
 	AccountController     *controllers.Account
 	TransactionController *controllers.Transaction
+	AccountRepo           *repositories.AccountsRepository
+	TransactionRepo       *repositories.TransactionsRepository
 }
 
 func NewContainer() (c Container) {
 	c.Router = gin.Default()
-	c.AccountController = controllers.NewAccount()
-	c.TransactionController = controllers.NewTransaction()
+
+	// Repositories
+	c.AccountRepo = repositories.NewAccountRepository()
+	c.TransactionRepo = repositories.NewTransactionRepository()
+
+	// Controllers
+	c.AccountController = controllers.NewAccount(c.AccountRepo)
+	c.TransactionController = controllers.NewTransaction(c.TransactionRepo)
+
 	return c
 }

@@ -12,9 +12,8 @@ type Account struct {
 	repo *repositories.AccountsRepository
 }
 
-func NewAccount() *Account {
-	a := &Account{repo: repositories.NewAccountRepository()}
-	return a
+func NewAccount(repo *repositories.AccountsRepository) *Account {
+	return &Account{repo: repo}
 }
 
 func (a *Account) CreateAccount(c *gin.Context) {

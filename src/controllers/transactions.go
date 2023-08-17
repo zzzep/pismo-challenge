@@ -12,9 +12,8 @@ type Transaction struct {
 	repo *repositories.TransactionsRepository
 }
 
-func NewTransaction() *Transaction {
-	t := &Transaction{repo: repositories.NewTransactionRepository()}
-	return t
+func NewTransaction(repo *repositories.TransactionsRepository) *Transaction {
+	return &Transaction{repo: repo}
 }
 
 func (t *Transaction) CreateTransaction(c *gin.Context) {
