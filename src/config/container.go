@@ -10,14 +10,15 @@ type Container struct {
 	Router                *gin.Engine
 	AccountController     *controllers.Account
 	TransactionController *controllers.Transaction
-	AccountRepo           *repositories.AccountsRepository
-	TransactionRepo       *repositories.TransactionsRepository
+	AccountRepo           repositories.IAccountsRepository
+	TransactionRepo       repositories.ITransactionsRepository
 }
 
 // NewContainer initializes a new Container.
 //
 // Returns:
-//     c Container: The initialized Container.
+//
+//	c Container: The initialized Container.
 func NewContainer() (c Container) {
 	c.Router = gin.Default()
 

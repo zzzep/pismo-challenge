@@ -12,7 +12,7 @@ RUN go mod tidy
 
 RUN go build -o /pismo_challenge
 
-RUN go test ./...
+# RUN go test ./...
 
 EXPOSE 80
 

@@ -8,6 +8,11 @@ import (
 	"log"
 )
 
+type ITransactionsRepository interface {
+	Create(data domains.Transaction) bool
+	GetByAccount(id int) []domains.Transaction
+}
+
 type TransactionsRepository struct {
 	db *gorm.DB
 }

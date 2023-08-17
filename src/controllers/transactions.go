@@ -9,13 +9,13 @@ import (
 )
 
 type Transaction struct {
-	repo *repositories.TransactionsRepository
+	repo repositories.ITransactionsRepository
 }
 
 // NewTransaction creates a new Transaction object.
 //
 // It takes in a TransactionsRepository object as a parameter and returns a pointer to a Transaction object.
-func NewTransaction(repo *repositories.TransactionsRepository) *Transaction {
+func NewTransaction(repo repositories.ITransactionsRepository) *Transaction {
 	return &Transaction{repo: repo}
 }
 

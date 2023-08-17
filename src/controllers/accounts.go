@@ -9,14 +9,14 @@ import (
 )
 
 type Account struct {
-	repo *repositories.AccountsRepository
+	repo repositories.IAccountsRepository
 }
 
 // NewAccount creates a new Account instance.
 //
 // It takes a pointer to an AccountsRepository as a parameter.
 // It returns a pointer to an Account.
-func NewAccount(repo *repositories.AccountsRepository) *Account {
+func NewAccount(repo repositories.IAccountsRepository) *Account {
 	return &Account{repo: repo}
 }
 

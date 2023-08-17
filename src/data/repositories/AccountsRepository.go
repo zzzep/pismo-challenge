@@ -8,6 +8,11 @@ import (
 	"log"
 )
 
+type IAccountsRepository interface {
+	Create(data domains.Account) bool
+	Get(id int) *domains.Account
+}
+
 type AccountsRepository struct {
 	db *gorm.DB
 }
