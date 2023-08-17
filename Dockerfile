@@ -4,11 +4,11 @@ WORKDIR /var/app
 
 COPY . .
 
-RUN go mod download
+# RUN go mod download
 
-RUN go clean -modcache
+# RUN go clean -modcache
 
-RUN go mod tidy
+# RUN go mod tidy
 
 RUN go build -o /pismo_challenge
 

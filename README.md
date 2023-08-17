@@ -15,7 +15,7 @@ godoc -http=:6060
 http://localhost:6060/pkg/github.com/zzzep/pismo-challenge/
 
 #### Swagger
-[GET] http://localhost/swagger/
+[GET] http://localhost/swagger/index.html
 
 ### Endpoints
 #### [POST] http://localhost/accounts (criação de uma conta)

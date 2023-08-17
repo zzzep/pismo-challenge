@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/zzzep/pismo-challenge/docs"
 	"github.com/zzzep/pismo-challenge/src/config"
 	"github.com/zzzep/pismo-challenge/src/data/migrations"
 	"log"
