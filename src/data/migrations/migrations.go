@@ -7,6 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// Run runs the function.
+//
+// No parameters.
+// Returns an error.
 func Run() (err error) {
 	var db *gorm.DB
 	m := mysql.Open(enum.GetDatabaseConnection())

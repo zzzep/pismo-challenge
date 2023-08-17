@@ -12,6 +12,9 @@ type Transaction struct {
 	repo *repositories.TransactionsRepository
 }
 
+// NewTransaction creates a new Transaction object.
+//
+// It takes in a TransactionsRepository object as a parameter and returns a pointer to a Transaction object.
 func NewTransaction(repo *repositories.TransactionsRepository) *Transaction {
 	return &Transaction{repo: repo}
 }

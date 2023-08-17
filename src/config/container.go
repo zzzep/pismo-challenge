@@ -14,6 +14,10 @@ type Container struct {
 	TransactionRepo       *repositories.TransactionsRepository
 }
 
+// NewContainer initializes a new Container.
+//
+// Returns:
+//     c Container: The initialized Container.
 func NewContainer() (c Container) {
 	c.Router = gin.Default()
 
