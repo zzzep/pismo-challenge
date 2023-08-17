@@ -1,4 +1,4 @@
-FROM golang:1.16-buster AS builder
+FROM golang:1.20-buster AS builder
 
 WORKDIR /var/app
 
@@ -8,8 +8,10 @@ RUN go mod download
 
 COPY *.go ./
 
+# RUN go clean -modcache ; go mod tidy
+
 RUN go build -o /pismo_challenge
 
-EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["/pismo_challenge"]

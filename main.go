@@ -1,13 +1,23 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"github.com/zzzep/pismo-challenge/config"
+	"github.com/zzzep/pismo-challenge/migrations"
+	"log"
 )
 
+const addr = "0.0.0.0:80"
+
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = fmt.Fprintf(w, "Hello, world!")
-	})
-	_ = http.ListenAndServe(":8080", nil)
+	if err := migrations.Run(); err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	c := config.NewContainer()
+	c.SetRoutes()
+
+	if err := c.Router.Run(addr); err != nil {
+		log.Fatal(err)
+	}
 }
