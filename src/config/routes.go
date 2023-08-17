@@ -6,7 +6,7 @@ import (
 
 func (c *Container) SetRoutes() {
 	c.Router.POST("/accounts", c.AccountController.CreateAccount)
-	c.Router.GET("/accounts/{accountId}", c.AccountController.GetAccount)
+	c.Router.GET("/accounts/:accountId", c.AccountController.GetAccount)
 	c.Router.POST("/transactions", c.TransactionController.CreateTransaction)
 	c.Router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "success", "status": "OK"})

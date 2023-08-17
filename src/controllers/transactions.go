@@ -6,7 +6,7 @@ import (
 )
 
 type Transaction struct {
-	repo repositories.TransactionsRepository
+	repo *repositories.TransactionsRepository
 }
 
 func NewTransaction() *Transaction {
