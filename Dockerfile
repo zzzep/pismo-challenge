@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY *.go ./
 
-# RUN go clean -modcache ; go mod tidy
+RUN go clean -modcache ; go mod tidy
 
 RUN go build -o /pismo_challenge
 

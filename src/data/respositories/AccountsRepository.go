@@ -1,8 +1,12 @@
 package respositories
 
-import "github.com/zzzep/pismo-challenge/src/data/entities"
+import (
+	"github.com/zzzep/pismo-challenge/src/data/entities"
+)
 
-type AccountsRepository struct{}
+type AccountsRepository struct {
+	db gorm.Model
+}
 
 func NewAccountRepository() AccountsRepository {
 	return AccountsRepository{}
