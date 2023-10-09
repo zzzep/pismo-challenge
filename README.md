@@ -3,7 +3,7 @@
 ## How to Run
 
 ```shell script
-docker compose up --build
+docker compose up --build -d
 ```
 
 ## How to use

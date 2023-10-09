@@ -1,17 +1,12 @@
 package repositories
 
 import (
-	"github.com/zzzep/pismo-challenge/src/data/domains"
-	"github.com/zzzep/pismo-challenge/src/enum"
+	"github.com/zzzep/pismo-challenge/src/application/entities"
+	"github.com/zzzep/pismo-challenge/src/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 )
-
-type IAccountsRepository interface {
-	Create(data domains.Account) bool
-	Get(id int) *domains.Account
-}
 
 type AccountsRepository struct {
 	db *gorm.DB
@@ -24,7 +19,7 @@ type AccountsRepository struct {
 // If an error occurs during the database connection setup, it logs the error and returns an empty AccountsRepository.
 // Otherwise, it returns a new instance of AccountsRepository with the initialized database connection.
 func NewAccountRepository() *AccountsRepository {
-	m := mysql.Open(enum.GetDatabaseConnection())
+	m := mysql.Open(config.GetDatabaseConnection())
 	db, err := gorm.Open(m, &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -35,8 +30,8 @@ func NewAccountRepository() *AccountsRepository {
 
 // Create creates a new account in the AccountsRepository.
 //
-// It takes a `domains.Account` data as a parameter and returns a boolean value.
-func (a AccountsRepository) Create(data domains.Account) bool {
+// It takes a `domains.AccountEntity` data as a parameter and returns a boolean value.
+func (a AccountsRepository) Create(data entities.AccountEntity) bool {
 	r := a.db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
@@ -51,9 +46,9 @@ func (a AccountsRepository) Create(data domains.Account) bool {
 // - id: an integer representing the ID of the account to retrieve.
 //
 // Returns:
-// - a pointer to a domains.Account struct representing the retrieved account.
-func (a AccountsRepository) Get(id int) *domains.Account {
-	acc := &domains.Account{}
+// - a pointer to a domains.AccountEntity struct representing the retrieved account.
+func (a AccountsRepository) Get(id int) *entities.AccountEntity {
+	acc := &entities.AccountEntity{}
 	_ = a.db.First(acc, id)
 	return acc
 }

@@ -1,14 +1,15 @@
 // Package config to provides configuration of http server
-package config
+package httpserver
 
 import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/zzzep/pismo-challenge/src/adapters/primary"
 )
 
 // SetRoutes function to start and serve HTTP Routes
-func (c *Container) SetRoutes() {
+func SetRoutes(c *primary.Container) {
 
 	c.Router.POST("/accounts", c.AccountController.CreateAccount)
 	c.Router.GET("/accounts/:accountId", c.AccountController.GetAccount)

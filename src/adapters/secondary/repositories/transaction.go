@@ -1,17 +1,12 @@
 package repositories
 
 import (
-	"github.com/zzzep/pismo-challenge/src/data/domains"
-	"github.com/zzzep/pismo-challenge/src/enum"
+	"github.com/zzzep/pismo-challenge/src/application/entities"
+	"github.com/zzzep/pismo-challenge/src/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 )
-
-type ITransactionsRepository interface {
-	Create(data domains.Transaction) bool
-	GetByAccount(id int) []domains.Transaction
-}
 
 type TransactionsRepository struct {
 	db *gorm.DB
@@ -26,7 +21,7 @@ type TransactionsRepository struct {
 //
 // Returns a pointer to the initialized TransactionsRepository.
 func NewTransactionRepository() *TransactionsRepository {
-	m := mysql.Open(enum.GetDatabaseConnection())
+	m := mysql.Open(config.GetDatabaseConnection())
 	db, err := gorm.Open(m, &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
@@ -37,9 +32,9 @@ func NewTransactionRepository() *TransactionsRepository {
 
 // Create creates a new transaction in the TransactionsRepository.
 //
-// It takes a data parameter of type domains.Transaction.
+// It takes a data parameter of type domains.TransactionEntity.
 // It returns a boolean indicating whether the creation was successful.
-func (a TransactionsRepository) Create(data domains.Transaction) bool {
+func (a TransactionsRepository) Create(data entities.TransactionEntity) bool {
 	r := a.db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
@@ -51,9 +46,9 @@ func (a TransactionsRepository) Create(data domains.Transaction) bool {
 // GetByAccount retrieves transactions by account ID.
 //
 // It takes an integer ID as a parameter.
-// It returns a slice of domains.Transaction.
-func (a TransactionsRepository) GetByAccount(id int) []domains.Transaction {
-	var transactions []domains.Transaction
+// It returns a slice of domains.TransactionEntity.
+func (a TransactionsRepository) GetByAccount(id int) []entities.TransactionEntity {
+	var transactions []entities.TransactionEntity
 	_ = a.db.Where("account_id = ?", id).Find(&transactions)
 	return transactions
 }
