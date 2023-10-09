@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zzzep/pismo-challenge/src/adapters/secondary/interfaces"
 	"github.com/zzzep/pismo-challenge/src/application/entities"
+	"net/http"
 	"strconv"
 )
 
@@ -12,47 +13,59 @@ type Account struct {
 	repo interfaces.IAccountsRepository
 }
 
-// NewAccount creates a new AccountEntity instance.
+// NewAccount creates a new Account instance.
 //
 // It takes a pointer to an AccountsRepository as a parameter.
-// It returns a pointer to an AccountEntity.
+// It returns a pointer to an Account.
 func NewAccount(repo interfaces.IAccountsRepository) *Account {
 	return &Account{repo: repo}
 }
 
 // CreateAccount
-// @Summary Create new AccountEntity
+// @Summary Create new Account
 // @Accept json
 // @Produce json
-// @Param JSON body domains.AccountEntity true "Document Number"
-// @Success 200 {object} domains.AccountEntity{document_number=string}
+// @Param JSON body domains.Account true "Document Number"
+// @Success 200 {object} domains.Account{document_number=string}
 // @Failure 500 {object} nil
 // @Router /accounts [POST]
 func (a *Account) CreateAccount(c *gin.Context) {
-	b, _ := c.GetRawData()
-	acc := &entities.AccountEntity{}
-	_ = json.Unmarshal(b, acc)
-	if a.repo.Create(*acc) {
-		c.JSON(200, acc)
+	data, dataErr := c.GetRawData()
+	if dataErr != nil {
+		c.JSON(http.StatusBadRequest, dataErr.Error())
 		return
 	}
-	c.JSON(500, nil)
+	acc := &entities.Account{}
+	jsonErr := json.Unmarshal(data, acc)
+	if jsonErr != nil {
+		c.JSON(http.StatusBadRequest, jsonErr.Error())
+		return
+	}
+	if a.repo.Create(*acc) {
+		c.JSON(http.StatusOK, acc)
+		return
+	}
+	c.JSON(http.StatusInternalServerError, nil)
 }
 
 // GetAccount
-// @Summary Create new AccountEntity
+// @Summary Create new Account
 // @Accept json
 // @Produce json
-// @Param accountId path int true "AccountEntity ID"
-// @Success 200 {object} domains.AccountEntity{account_id=int,document_number=string}
+// @Param accountId path int true "Account ID"
+// @Success 200 {object} domains.Account{account_id=int,document_number=string}
 // @Failure 404 {object} map[string]any{message=string}
 // @Router /accounts/{accountId} [GET]
 func (a *Account) GetAccount(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("accountId"))
-	acc := a.repo.Get(id)
-	if acc != nil {
-		c.JSON(200, acc)
+	id, idErr := strconv.Atoi(c.Param("accountId"))
+	if idErr != nil {
+		c.JSON(http.StatusBadRequest, idErr.Error())
 		return
 	}
-	c.JSON(404, gin.H{"message": "not found"})
+	acc := a.repo.Get(id)
+	if acc != nil {
+		c.JSON(http.StatusOK, acc)
+		return
+	}
+	c.JSON(http.StatusNotFound, gin.H{"message": "id not found"})
 }

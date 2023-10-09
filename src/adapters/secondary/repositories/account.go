@@ -30,8 +30,8 @@ func NewAccountRepository() *AccountsRepository {
 
 // Create creates a new account in the AccountsRepository.
 //
-// It takes a `domains.AccountEntity` data as a parameter and returns a boolean value.
-func (a AccountsRepository) Create(data entities.AccountEntity) bool {
+// It takes a `domains.Account` data as a parameter and returns a boolean value.
+func (a AccountsRepository) Create(data entities.Account) bool {
 	r := a.db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
@@ -46,9 +46,9 @@ func (a AccountsRepository) Create(data entities.AccountEntity) bool {
 // - id: an integer representing the ID of the account to retrieve.
 //
 // Returns:
-// - a pointer to a domains.AccountEntity struct representing the retrieved account.
-func (a AccountsRepository) Get(id int) *entities.AccountEntity {
-	acc := &entities.AccountEntity{}
+// - a pointer to a domains.Account struct representing the retrieved account.
+func (a AccountsRepository) Get(id int) *entities.Account {
+	acc := &entities.Account{}
 	_ = a.db.First(acc, id)
 	return acc
 }

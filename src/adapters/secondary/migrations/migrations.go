@@ -13,13 +13,14 @@ import (
 // Returns an error.
 func Run() (err error) {
 	var db *gorm.DB
-	m := mysql.Open(config.GetDatabaseConnection())
+	conn := config.GetDatabaseConnection()
+	m := mysql.Open(conn)
 	db, err = gorm.Open(m, &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
-	err = db.AutoMigrate(&entity2.AccountEntity{}, &entity2.TransactionEntity{})
+	err = db.AutoMigrate(&entity2.Account{}, &entity2.Transaction{})
 	if err != nil {
 		return err
 	}

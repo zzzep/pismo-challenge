@@ -5,6 +5,6 @@ import (
 )
 
 type ITransactionsRepository interface {
-	Create(data entities.TransactionEntity) bool
-	GetByAccount(id int) []entities.TransactionEntity
+	Create(data entities.Transaction) bool
+	GetByAccount(id int) ([]entities.Transaction, error)
 }

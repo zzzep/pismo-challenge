@@ -18,7 +18,7 @@ services:
     depends_on:
       - database
     networks:
-      app_net:
+      pismo_net:
         ipv4_address: 10.30.1.20
 
   database:
@@ -37,13 +37,13 @@ services:
       MYSQL_PASSWORD: 1q!Q
       MYSQL_DATABASE: pismo
     networks:
-      app_net:
+      pismo_net:
         ipv4_address: 10.30.1.22
 volumes:
   db-volume:
 
 networks:
-  app_net:
+  pismo_net:
     driver: bridge
     ipam:
       driver: default

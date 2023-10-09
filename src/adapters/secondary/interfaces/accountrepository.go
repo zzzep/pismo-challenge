@@ -5,6 +5,6 @@ import (
 )
 
 type IAccountsRepository interface {
-	Create(data entities.AccountEntity) bool
-	Get(id int) *entities.AccountEntity
+	Create(data entities.Account) bool
+	Get(id int) *entities.Account
 }

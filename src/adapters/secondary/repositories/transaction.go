@@ -32,9 +32,9 @@ func NewTransactionRepository() *TransactionsRepository {
 
 // Create creates a new transaction in the TransactionsRepository.
 //
-// It takes a data parameter of type domains.TransactionEntity.
+// It takes a data parameter of type domains.Transaction.
 // It returns a boolean indicating whether the creation was successful.
-func (a TransactionsRepository) Create(data entities.TransactionEntity) bool {
+func (a TransactionsRepository) Create(data entities.Transaction) bool {
 	r := a.db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
@@ -46,9 +46,12 @@ func (a TransactionsRepository) Create(data entities.TransactionEntity) bool {
 // GetByAccount retrieves transactions by account ID.
 //
 // It takes an integer ID as a parameter.
-// It returns a slice of domains.TransactionEntity.
-func (a TransactionsRepository) GetByAccount(id int) []entities.TransactionEntity {
-	var transactions []entities.TransactionEntity
-	_ = a.db.Where("account_id = ?", id).Find(&transactions)
-	return transactions
+// It returns a slice of domains.Transaction.
+func (a TransactionsRepository) GetByAccount(id int) ([]entities.Transaction, error) {
+	var transactions []entities.Transaction
+	r := a.db.Where("account_id = ?", id).Find(&transactions)
+	if r.Error != nil {
+		log.Fatal(r.Error)
+	}
+	return transactions, r.Error
 }

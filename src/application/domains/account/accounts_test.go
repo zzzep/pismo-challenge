@@ -1,101 +1,81 @@
 package account
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/zzzep/pismo-challenge/src/adapters/secondary/interfaces"
-	"github.com/zzzep/pismo-challenge/src/application/entities"
 	"github.com/zzzep/pismo-challenge/src/helpers"
-	"reflect"
+	"net/http"
 	"testing"
 )
 
-func newMockAccount(hasError bool) MockAccountRepo {
-	return MockAccountRepo{hasError}
-}
-
-type MockAccountRepo struct {
-	hasError bool
-}
-
-func (m MockAccountRepo) Create(data entities.AccountEntity) bool {
-	if m.hasError {
-		return false
-	}
-	return true
-}
-
-func (m MockAccountRepo) Get(id int) *entities.AccountEntity {
-	if m.hasError {
-		return nil
-	}
-	return &entities.AccountEntity{AccountId: 1, DocumentNumber: "1234"}
-}
-
 func TestAccount_CreateAccount(t *testing.T) {
-	type fields struct {
-		repo interfaces.IAccountsRepository
+	testCases := helpers.TestCases{
+		{
+			Name:       "New Account with no error on database",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{AccRepo: helpers.NewMockAccount(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
+		{
+			Name:       "New Account with database error",
+			StatusCode: http.StatusInternalServerError,
+			Repos:      helpers.Repos{AccRepo: helpers.NewMockAccount(true)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
 	}
-	type args struct {
-		c *gin.Context
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		{name: "New AccountEntity", fields: fields{repo: newMockAccount(false)}, args: args{c: helpers.CreatePostContext()}},
-		{name: "New AccountEntity", fields: fields{repo: newMockAccount(true)}, args: args{c: helpers.CreatePostContext()}},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, tt := range testCases {
+		t.Run(tt.Name, func(t *testing.T) {
 			a := &Account{
-				repo: tt.fields.repo,
+				repo: tt.Repos.AccRepo,
 			}
-			a.CreateAccount(tt.args.c)
+			a.CreateAccount(tt.Args.C)
+
 		})
 	}
 }
 
 func TestAccount_GetAccount(t *testing.T) {
-	type fields struct {
-		repo interfaces.IAccountsRepository
+	testCases := helpers.TestCases{
+		{
+			Name:       "Get Account with no error on database",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{AccRepo: helpers.NewMockAccount(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
+		{
+			Name:       "Get Account with database error",
+			StatusCode: http.StatusInternalServerError,
+			Repos:      helpers.Repos{AccRepo: helpers.NewMockAccount(true)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
 	}
-	type args struct {
-		c *gin.Context
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		{name: "Get AccountEntity", fields: fields{repo: newMockAccount(false)}, args: args{c: helpers.CreatePostContext()}},
-		{name: "Get AccountEntity", fields: fields{repo: newMockAccount(true)}, args: args{c: helpers.CreatePostContext()}},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a := &Account{
-				repo: tt.fields.repo,
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			account := &Account{
+				repo: tc.Repos.AccRepo,
 			}
-			a.GetAccount(tt.args.c)
+			account.GetAccount(tc.Args.C)
 		})
 	}
 }
 
 func TestNewAccount(t *testing.T) {
-	type args struct {
-		repo interfaces.IAccountsRepository
-	}
+	mockRepo := helpers.NewMockAccount(false)
 	tests := []struct {
-		name string
-		args args
-		want *Account
+		Name       string
+		StatusCode int
+		Repos      helpers.Repos
 	}{
-		{name: "New AccountEntity", args: args{repo: newMockAccount(false)}, want: NewAccount(newMockAccount(false))},
+		{
+			Name:       "New Account Instance correctly",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{AccRepo: mockRepo},
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewAccount(tt.args.repo); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewAccount() = %v, want %v", got, tt.want)
+	for _, tc := range tests {
+		t.Run(tc.Name, func(t *testing.T) {
+			got := NewAccount(tc.Repos.AccRepo)
+			if got.repo != mockRepo {
+				t.Errorf("NewAccount() = %v, want %v", got, mockRepo)
 			}
 		})
 	}

@@ -21,7 +21,9 @@ type Container struct {
 // Returns:
 //
 //	c Container: The initialized Container.
-func NewContainer() (c *Container) {
+func NewContainer() *Container {
+	c := &Container{}
+
 	c.Router = gin.Default()
 
 	// Repositories
@@ -30,7 +32,7 @@ func NewContainer() (c *Container) {
 
 	// Controllers
 	c.AccountController = account.NewAccount(c.AccountRepo)
-	c.TransactionController = transaction.NewTransaction(c.TransactionRepo)
+	c.TransactionController = transaction.NewTransaction(c.TransactionRepo, c.AccountRepo)
 
 	return c
 }

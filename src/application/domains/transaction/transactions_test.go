@@ -1,107 +1,124 @@
 package transaction
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/zzzep/pismo-challenge/src/adapters/secondary/interfaces"
-	"github.com/zzzep/pismo-challenge/src/application/entities"
+	"github.com/stretchr/testify/assert"
 	"github.com/zzzep/pismo-challenge/src/helpers"
+	"net/http"
 	"reflect"
 	"testing"
 )
 
-func newMockTransaction(hasError bool) MockTransaction {
-	return MockTransaction{hasError}
-}
-
-type MockTransaction struct {
-	hasError bool
-}
-
-func (m MockTransaction) Create(data entities.TransactionEntity) bool {
-	if m.hasError {
-		return false
-	}
-	return true
-}
-
-func (m MockTransaction) GetByAccount(id int) []entities.TransactionEntity {
-	if m.hasError {
-		return []entities.TransactionEntity{}
-	}
-	return []entities.TransactionEntity{
-		{TransactionId: 1, AccountId: 1, OperationTypeId: 4, Amount: 123.45},
-	}
-}
-
 func TestNewTransaction(t *testing.T) {
-	type args struct {
-		repo interfaces.ITransactionsRepository
+	accRepo := helpers.NewMockAccount(false)
+	testCases := helpers.TestCases{
+		{
+			Name:  "New Transaction with no error on database",
+			Repos: helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Want:  NewTransaction(helpers.NewMockTransaction(false), accRepo),
+		},
+		{
+			Name:  "New Transaction with database error",
+			Repos: helpers.Repos{TRepo: helpers.NewMockTransaction(true)},
+			Want:  NewTransaction(helpers.NewMockTransaction(true), accRepo),
+		},
 	}
-	tests := []struct {
-		name string
-		args args
-		want *Transaction
-	}{
-		{name: "New TransactionEntity", args: args{repo: newMockTransaction(false)}, want: NewTransaction(newMockTransaction(false))},
-		{name: "New TransactionEntity", args: args{repo: newMockTransaction(true)}, want: NewTransaction(newMockTransaction(true))},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewTransaction(tt.args.repo); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewTransaction() = %v, want %v", got, tt.want)
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			got := NewTransaction(tc.Repos.TRepo, accRepo)
+			if !reflect.DeepEqual(got, tc.Want) {
+				t.Errorf("NewTransaction() = %v, Want %v", got, tc.Want)
 			}
 		})
 	}
 }
 
-func TestTransaction_CreateTransaction(t1 *testing.T) {
-	type fields struct {
-		repo interfaces.ITransactionsRepository
+func TestTransaction_CreateTransaction(t *testing.T) {
+	testCases := helpers.TestCases{
+		{
+			Name:       "Create Transaction with no error on database",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
+		{
+			Name:       "Create Transaction with database error",
+			StatusCode: http.StatusInternalServerError,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(true)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
+		{
+			Name:       "Create Transaction with no error and positive amount",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext("{\"operation_type_id\":1,\"amount\":10}")},
+		},
+		{
+			Name:       "Create Transaction with no error and negative amount",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext("{\"operation_type_id\":4,\"amount\":-10}")},
+		},
+		{
+			Name:       "Create Transaction with no error and positive amount and inverted operation",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext("{\"operation_type_id\":4,\"amount\":10}")},
+		},
+		{
+			Name:       "Create Transaction with no error and negative amount and inverted operation",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext("{\"operation_type_id\":1,\"amount\":-10}")},
+		},
 	}
-	type args struct {
-		c *gin.Context
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		{name: "Create TransactionEntity", fields: fields{repo: newMockTransaction(false)}, args: args{c: helpers.CreatePostContext()}},
-		{name: "Create TransactionEntity", fields: fields{repo: newMockTransaction(true)}, args: args{c: helpers.CreatePostContext()}},
-		{name: "Create TransactionEntity", fields: fields{repo: newMockTransaction(false)}, args: args{c: helpers.CreatePostContext("{\"operation_type_id\":1,\"amount\":10}")}},
-		{name: "Create TransactionEntity", fields: fields{repo: newMockTransaction(false)}, args: args{c: helpers.CreatePostContext("{\"operation_type_id\":4,\"amount\":-10}")}},
-	}
-	for _, tt := range tests {
-		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &Transaction{
-				repo: tt.fields.repo,
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			transaction := &Transaction{
+				repo:    testCase.Repos.TRepo,
+				accRepo: helpers.NewMockAccount(false),
 			}
-			t.CreateTransaction(tt.args.c)
+			transaction.CreateTransaction(testCase.Args.C)
+
+			assert.Equal(t, testCase.StatusCode, testCase.Args.C.Writer.Status(), testCase.Name)
 		})
 	}
 }
 
-func TestTransaction_GetTransactionByAccount(t1 *testing.T) {
-	type fields struct {
-		repo interfaces.ITransactionsRepository
+func TestTransaction_GetTransactionByAccount(t *testing.T) {
+	validData := helpers.CreatePostContext(`{"accountId":1}`)
+	validData.AddParam("accountId", "1")
+	serverErrorData := helpers.CreatePostContext(`{"accountId":1}`)
+	serverErrorData.AddParam("accountId", "1")
+
+	testCases := helpers.TestCases{
+		{
+			Name:       "Get Transaction By Account with valid data",
+			StatusCode: http.StatusOK,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: validData},
+		},
+		{
+			Name:       "Get Transaction By Account with database error",
+			StatusCode: http.StatusInternalServerError,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(true)},
+			Args:       helpers.GinArgs{C: serverErrorData},
+		},
+		{
+			Name:       "Get Transaction By Account with empty data",
+			StatusCode: http.StatusBadRequest,
+			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},
+			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
+		},
 	}
-	type args struct {
-		c *gin.Context
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		{name: "Get TransactionEntity By AccountEntity", fields: fields{repo: newMockTransaction(false)}, args: args{c: helpers.CreatePostContext()}},
-		{name: "Get TransactionEntity By AccountEntity", fields: fields{repo: newMockTransaction(true)}, args: args{c: helpers.CreatePostContext()}},
-	}
-	for _, tt := range tests {
-		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &Transaction{
-				repo: tt.fields.repo,
-			}
-			t.GetTransactionByAccount(tt.args.c)
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			transaction := NewTransaction(testCase.Repos.TRepo, helpers.NewMockAccount(false))
+			transaction.GetTransactionByAccount(testCase.Args.C)
+
+			assert.Equal(t, testCase.StatusCode, testCase.Args.C.Writer.Status(), testCase.Name)
 		})
 	}
 }
