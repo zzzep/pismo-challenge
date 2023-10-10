@@ -83,7 +83,11 @@ func (t *Transaction) calculateTransactionBalance(transaction *entities.Transact
 		return balance
 	}
 
-	if (balance > 0 && balance >= -transaction.Amount && transaction.Balance < 0) || (balance < 0 && balance >= transaction.Amount && transaction.Balance > 0) {
+	if (balance > 0 && transaction.Balance > 0) || (balance < 0 && transaction.Balance < 0) {
+		return balance
+	}
+
+	if (balance > 0 && balance >= -transaction.Balance) || (balance < 0 && balance >= transaction.Balance) {
 		balance += transaction.Balance
 		transaction.Balance = 0
 		return balance

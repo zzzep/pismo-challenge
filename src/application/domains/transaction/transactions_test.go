@@ -139,7 +139,7 @@ func TestTransaction_updateTransaction(t1 *testing.T) {
 			transactions[i] = transaction
 		}
 
-		balance := 0.0
+		balance := current
 		for _, transaction := range transactions {
 			balance += transaction.Balance
 		}
@@ -188,7 +188,7 @@ func TestTransaction_updateTransaction(t1 *testing.T) {
 			transactions[i] = transaction
 		}
 
-		balance := 0.0
+		balance := current
 		for _, transaction := range transactions {
 			balance += transaction.Balance
 		}
