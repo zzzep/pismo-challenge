@@ -45,10 +45,58 @@ func (t *Transaction) CreateTransaction(c *gin.Context) {
 
 	if t.repo.Create(*transaction) {
 		c.JSON(http.StatusOK, transaction)
+		t.calculateBalance(transaction)
 		return
 	}
 
 	c.JSON(http.StatusInternalServerError, nil)
+}
+
+func (t *Transaction) calculateBalance(e *entities.Transaction) {
+	balance := 0.0
+	transactions, _ := t.repo.GetUnpaidBalanceByAccount(e.AccountId)
+	for _, transaction := range transactions {
+		balance += transaction.Amount
+	}
+	if (balance > 0 && e.Amount > 0) || (balance < 0 && e.Amount < 0) {
+		return
+	}
+	for _, transaction := range transactions {
+		if transaction.TransactionId == e.TransactionId {
+			break
+		}
+		balance = t.calculateTransactionBalance(&transaction, balance)
+		tErr := t.repo.Update(transaction)
+		if tErr != nil {
+			panic(tErr)
+		}
+	}
+	e.Balance = balance
+	err := t.repo.Update(*e)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (t *Transaction) calculateTransactionBalance(transaction *entities.Transaction, balance float64) float64 {
+	if transaction.Balance == 0 {
+		return balance
+	}
+
+	if (balance > 0 && balance >= -transaction.Amount && transaction.Balance < 0) || (balance < 0 && balance >= transaction.Amount && transaction.Balance > 0) {
+		balance += transaction.Balance
+		transaction.Balance = 0
+		return balance
+	}
+
+	if balance > 0 {
+		transaction.Balance = transaction.Balance + balance
+	} else {
+		transaction.Balance = transaction.Balance - balance
+	}
+	balance = 0
+
+	return balance
 }
 
 // fetchTransactionFromBody fetches a transaction from the request body.

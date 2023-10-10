@@ -50,6 +50,21 @@ func (m MockTransaction) GetByAccount(id int) ([]entities.Transaction, error) {
 		{TransactionId: 1, AccountId: 1, OperationTypeId: 4, Amount: 123.45},
 	}, nil
 }
+func (m MockTransaction) GetUnpaidBalanceByAccount(id int) ([]entities.Transaction, error) {
+	if m.hasError {
+		return []entities.Transaction{}, errors.New("mock error")
+	}
+	return []entities.Transaction{
+		{TransactionId: 1, AccountId: 1, OperationTypeId: 4, Amount: 123.45},
+	}, nil
+}
+
+func (m MockTransaction) Update(data entities.Transaction) error {
+	if m.hasError {
+		return errors.New("mock error")
+	}
+	return nil
+}
 
 func NewMockAccount(hasError bool) MockAccountRepo {
 	return MockAccountRepo{hasError}
