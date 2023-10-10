@@ -9,7 +9,11 @@ import (
 )
 
 type TransactionsRepository struct {
-	db *gorm.DB
+	Db *gorm.DB
+}
+
+func (a TransactionsRepository) GetDb() *gorm.DB {
+	return a.Db
 }
 
 // NewTransactionRepository creates a new instance of TransactionsRepository.
@@ -27,7 +31,7 @@ func NewTransactionRepository() *TransactionsRepository {
 		log.Fatal(err)
 		return &TransactionsRepository{}
 	}
-	return &TransactionsRepository{db: db}
+	return &TransactionsRepository{Db: db}
 }
 
 // Create creates a new transaction in the TransactionsRepository.
@@ -36,7 +40,7 @@ func NewTransactionRepository() *TransactionsRepository {
 // It returns a boolean indicating whether the creation was successful.
 func (a TransactionsRepository) Create(data entities.Transaction) bool {
 	data.Balance = data.Amount
-	r := a.db.Create(&data)
+	r := a.Db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
 		return false
@@ -50,7 +54,7 @@ func (a TransactionsRepository) Create(data entities.Transaction) bool {
 // It returns a slice of domains.Transaction.
 func (a TransactionsRepository) GetByAccount(id int) ([]entities.Transaction, error) {
 	var transactions []entities.Transaction
-	r := a.db.Where("account_id = ?", id).Find(&transactions)
+	r := a.Db.Where("account_id = ?", id).Find(&transactions)
 	if r.Error != nil {
 		log.Fatal(r.Error)
 	}
@@ -60,7 +64,7 @@ func (a TransactionsRepository) GetByAccount(id int) ([]entities.Transaction, er
 func (a TransactionsRepository) GetUnpaidBalanceByAccount(id int) ([]entities.Transaction, error) {
 	var transactions []entities.Transaction
 	r := a.
-		db.
+		Db.
 		Where("account_id = ?", id).
 		Where("balance <> 0").
 		Order("event_date desc").
@@ -72,7 +76,7 @@ func (a TransactionsRepository) GetUnpaidBalanceByAccount(id int) ([]entities.Tr
 }
 
 func (a TransactionsRepository) Update(data entities.Transaction) error {
-	r := a.db.Save(&data)
+	r := a.Db.Save(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
 		return r.Error

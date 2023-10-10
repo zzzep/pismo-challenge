@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/mock"
 	"github.com/zzzep/pismo-challenge/src/adapters/secondary/interfaces"
 	"github.com/zzzep/pismo-challenge/src/application/entities"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 )
@@ -28,13 +30,20 @@ func CreatePostContext(msg ...string) *gin.Context {
 }
 
 func NewMockTransaction(hasError bool) MockTransaction {
-	return MockTransaction{hasError}
+	t := MockTransaction{hasError: hasError}
+
+	return t
 }
 
 type MockTransaction struct {
+	*mock.Mock
 	hasError bool
 }
 
+func (m MockTransaction) GetDb() *gorm.DB {
+	args := m.Called()
+	return args.Get(0).(*gorm.DB)
+}
 func (m MockTransaction) Create(data entities.Transaction) bool {
 	if m.hasError {
 		return false

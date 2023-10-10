@@ -9,7 +9,7 @@ import (
 )
 
 type AccountsRepository struct {
-	db *gorm.DB
+	Db *gorm.DB
 }
 
 // NewAccountRepository creates a new instance of AccountsRepository.
@@ -25,14 +25,14 @@ func NewAccountRepository() *AccountsRepository {
 		log.Fatal(err)
 		return &AccountsRepository{}
 	}
-	return &AccountsRepository{db: db}
+	return &AccountsRepository{Db: db}
 }
 
 // Create creates a new account in the AccountsRepository.
 //
 // It takes a `domains.Account` data as a parameter and returns a boolean value.
 func (a AccountsRepository) Create(data entities.Account) bool {
-	r := a.db.Create(&data)
+	r := a.Db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
 		return false
@@ -49,6 +49,6 @@ func (a AccountsRepository) Create(data entities.Account) bool {
 // - a pointer to a domains.Account struct representing the retrieved account.
 func (a AccountsRepository) Get(id int) *entities.Account {
 	acc := &entities.Account{}
-	_ = a.db.First(acc, id)
+	_ = a.Db.First(acc, id)
 	return acc
 }

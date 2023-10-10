@@ -53,25 +53,19 @@ func (t *Transaction) CreateTransaction(c *gin.Context) {
 }
 
 func (t *Transaction) calculateBalance(e *entities.Transaction) {
-	balance := 0.0
+	current := e.Balance
 	transactions, _ := t.repo.GetUnpaidBalanceByAccount(e.AccountId)
 	for _, transaction := range transactions {
-		balance += transaction.Amount
-	}
-	if (balance > 0 && e.Amount > 0) || (balance < 0 && e.Amount < 0) {
-		return
-	}
-	for _, transaction := range transactions {
 		if transaction.TransactionId == e.TransactionId {
-			break
+			continue
 		}
-		balance = t.calculateTransactionBalance(&transaction, balance)
+		current = t.calculateTransactionBalance(&transaction, current)
 		tErr := t.repo.Update(transaction)
 		if tErr != nil {
 			panic(tErr)
 		}
 	}
-	e.Balance = balance
+	e.Balance = current
 	err := t.repo.Update(*e)
 	if err != nil {
 		panic(err)

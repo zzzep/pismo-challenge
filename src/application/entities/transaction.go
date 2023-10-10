@@ -13,5 +13,4 @@ type Transaction struct {
 	EventDate       time.Time     `gorm:"type:time; autoCreateTime; default:CURRENT_TIMESTAMP(3)" json:"-"`
 	CreatedAt       time.Time     `gorm:"type:time; autoCreateTime; default:CURRENT_TIMESTAMP(3)" json:"-"`
 	UpdatedAt       time.Time     `gorm:"type:time; autoUpdateTime; default:CURRENT_TIMESTAMP(3)" json:"-"`
-	DeletedAt       time.Time     `gorm:"type:time; default:null" json:"-"`
 }
