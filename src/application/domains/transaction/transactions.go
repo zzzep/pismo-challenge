@@ -43,16 +43,12 @@ func (t *Transaction) CreateTransaction(c *gin.Context) {
 
 	t.checkValue(transaction)
 
-	if t.repo.Create(*transaction) {
-		c.JSON(http.StatusOK, transaction)
-		t.calculateBalance(transaction)
-		return
-	}
-
-	c.JSON(http.StatusInternalServerError, nil)
+	transaction.Balance = transaction.Amount
+	transaction.Balance = t.calculateBalance(transaction)
+	c.JSON(http.StatusOK, transaction)
 }
 
-func (t *Transaction) calculateBalance(e *entities.Transaction) {
+func (t *Transaction) calculateBalance(e *entities.Transaction) float64 {
 	current := e.Balance
 	transactions, _ := t.repo.GetUnpaidBalanceByAccount(e.AccountId)
 	for _, transaction := range transactions {
@@ -70,6 +66,7 @@ func (t *Transaction) calculateBalance(e *entities.Transaction) {
 	if err != nil {
 		panic(err)
 	}
+	return current
 }
 
 func (t *Transaction) calculateTransactionBalance(transaction *entities.Transaction, balance float64) float64 {

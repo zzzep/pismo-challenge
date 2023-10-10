@@ -43,12 +43,6 @@ func TestTransaction_CreateTransaction(t *testing.T) {
 			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
 		},
 		{
-			Name:       "Create Transaction with database error",
-			StatusCode: http.StatusInternalServerError,
-			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(true)},
-			Args:       helpers.GinArgs{C: helpers.CreatePostContext()},
-		},
-		{
 			Name:       "Create Transaction with no error and positive amount",
 			StatusCode: http.StatusOK,
 			Repos:      helpers.Repos{TRepo: helpers.NewMockTransaction(false)},

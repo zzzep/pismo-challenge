@@ -39,7 +39,6 @@ func NewTransactionRepository() *TransactionsRepository {
 // It takes a data parameter of type domains.Transaction.
 // It returns a boolean indicating whether the creation was successful.
 func (a TransactionsRepository) Create(data entities.Transaction) bool {
-	data.Balance = data.Amount
 	r := a.Db.Create(&data)
 	if r.Error != nil {
 		log.Fatal(r.Error)
@@ -67,7 +66,7 @@ func (a TransactionsRepository) GetUnpaidBalanceByAccount(id int) ([]entities.Tr
 		Db.
 		Where("account_id = ?", id).
 		Where("balance <> 0").
-		Order("event_date desc").
+		Order("event_date asc").
 		Find(&transactions)
 	if r.Error != nil {
 		log.Fatal(r.Error)
